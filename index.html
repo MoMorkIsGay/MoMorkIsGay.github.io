@@ -1,165 +1,73 @@
 <!DOCTYPE html>
-<!-- saved from url=(0047)https://kqakqakqa.github.io/utf-block-sign-art/ -->
-<html lang="zh-Hans"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
+  <title>高级 HTML 网页示例</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
     
-    <title>方块字标志牌生成器 | UTF-Block Sign Art Generator</title>
-<style type="text/css" id="photoShowStyles_pointerNone">*:before,*:after{pointer-events:none !important}</style></head>
-
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    nav {
+      background-color: #666;
+      color: #fff;
+      padding: 10px;
+    }
+    
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li {
+      display: inline-block;
+      margin-right: 10px;
+    }
+    
+    section {
+      padding: 20px;
+    }
+    
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
 <body>
-    <div>
-        <label for="input">输入文字： Input text: </label>
-        <textarea type="text" id="input">←换乘 1号线 To Line 1</textarea>
-        <button onclick="main()">绘制 Draw</button>
-    </div>
-    <div id="canvasContainer"></div>
-    <div id="artContainer"></div>
-
-
-<script>
-    function main() {
-
-        inputText = (document.fonts.check("8px 'Chill Bitmap 7px'")) ? (document.getElementById("input").value) : "字体加载中... Font loading...";
-        let artContainer = document.getElementById("artContainer"),
-            canvasContainer = document.getElementById("canvasContainer");
-        let canvases = text2canvases(inputText);
-        let arts = canvases2arts(canvases);
-
-        renderCanvases(canvases, canvasContainer);
-        renderArts(arts, artContainer);
-    }
-
-    function text2canvases(text) {
-        let canvases = [];
-        let textArray = Array.from(text);
-        while (textArray.length) { // 逐字绘制
-            let canvas = newCanvas();
-            let ctx = canvas.getContext("2d");
-            let widthUsed = 0;
-            do { // 判断剩余空间足够再绘制
-                let character = textArray.shift();
-                ctx.fillText(character, widthUsed, canvas.height - 1);
-                widthUsed += ctx.measureText(character).width;
-                widthCharacterNext = ctx.measureText(textArray[0]).width;
-            } while (widthUsed + widthCharacterNext <= canvas.width);
-            canvases.push(canvas);
-        }
-        return canvases;
-
-        function newCanvas() {
-            let canvas = document.createElement("canvas");
-            canvas.className = "artCanvas";
-            canvas.width = 20;
-            canvas.height = 8;
-            let ctx = canvas.getContext("2d");
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#000";
-            ctx.font = "8px 'Chill Bitmap 7px'";
-            return canvas;
-        }
-    }
-
-    function canvases2arts(canvases) {
-        const ALCHEMY = [[[["  ", " ▗"], ["▖ ", "▄"]], [[" ▝", " ▐"], ["▞", "▟"]]], [[["▘ ", "▚",], ["▌ ", "▙",]], [["▀", "▜"], ["▛", "█"]]]]; // 简单粗暴的编码
-        let arts = [];
-
-        canvases.forEach(canvas => {
-            let canvasData = Array.from(new Array(canvas.height), () => new Array(canvas.width)); // 空二维数组
-            let artArray = Array.from(new Array(canvas.height / 2), () => new Array(canvas.width / 2));
-
-            let ctx = canvas.getContext("2d");
-            let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) { // 遍历像素
-                    let i = (y * canvas.width + x) * 4;
-                    const R = imgData[i];
-                    const G = imgData[i + 1];
-                    const B = imgData[i + 2];
-                    let pixel = ((R + G + B) / 3 < 127) ? 1 : 0; // 二值化
-
-                    canvasData[y][x] = pixel;
-                    if (y % 2 && x % 2) { // 像素4合1，生成UTF-8块元素
-                        let p1 = canvasData[y - 1][x - 1],
-                            p2 = canvasData[y - 1][x],
-                            p3 = canvasData[y][x - 1];
-                        artArray[(y - 1) / 2][(x - 1) / 2] = ALCHEMY[p1][p2][p3][pixel];
-                    }
-                }
-            }
-            let artLines = artArray.map(e => e.join(""));
-            arts.push(artLines);
-        });
-        return arts;
-    }
-
-    function renderCanvases(canvases, container) {
-        container.innerHTML = "";
-        canvases.forEach(canvas => {
-            container.appendChild(canvas);
-        });
-    }
-
-    function renderArts(arts, container) {
-        container.innerHTML = "";
-        arts.forEach(artLines => {
-            let artLinesElement = document.createElement("div");
-            artLinesElement.className = "artLines";
-            artLines.forEach(artText => {
-                let artElement = document.createElement("pre");
-                artElement.className = "art";
-                artElement.innerText = artText;
-                artLinesElement.appendChild(artElement);
-            });
-            container.appendChild(artLinesElement);
-        });
-    }
-</script>
-
-<style>
-    @font-face {
-        font-family: "Chill Bitmap 7px";
-        src: url("ChillBitmap7x.woff2") format("woff2");
-    }
-
-    * {
-        font-size: large;
-    }
-
-    .art {
-        line-height: 1.25em;
-        font-size: 2em;
-        margin: 0;
-        user-select: all;
-        border: 0.5px dashed #ccc;
-    }
-
-    .artLines {
-        border: 1px solid #ccc;
-        margin-right: 3px;
-        display: inline-block;
-    }
-
-    #input {
-        width: min(100vmin, 100%);
-        font-size: 2em;
-        display: inline-block;
-        font-family: "Chill Bitmap 7px";
-    }
-
-    .artCanvas {
-        width: 10vw;
-        border: 1px solid #ccc;
-        image-rendering: pixelated;
-    }
-</style>
-
-
-</body><div id="photoShowViewer" class="sb_BingCA photoShow">
-        <div class="photoshow-viewer-shadow"></div>
-        <div class="photoshow-img-wrapper">
-          <img>
-          <div class="photoshow-view-mode-switch-tip">a</div>
-        </div>
-        <i class="photoshow-img-size"></i>
-      </div></html>
+  <header>
+    <h1>高级 HTML 网页示例</h1>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="#">首页</a></li>
+      <li><a href="#">关于我们</a></li>
+      <li><a href="#">服务</a></li>
+      <li><a href="#">联系我们</a></li>
+    </ul>
+  </nav>
+  
+  <section>
+    <h2>欢迎访问我们的网站！</h2>
+    <p>这是一个高级 HTML 网页示例。</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam mattis purus nec justo commodo, at ullamcorper dolor convallis. Donec convallis leo nec purus tristique eleifend. Sed varius pharetra sem in fringilla. Proin quis fermentum nisl. In tempus nibh ut erat sollicitudin, non varius mauris elementum.</p>
+  </section>
+  
+  <footer>
+    <p>&copy; 2023 高级 HTML 网页示例. 版权所有.</p>
+  </footer>
+</body>
+</html>
