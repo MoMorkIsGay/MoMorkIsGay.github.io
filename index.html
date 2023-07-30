@@ -8,7 +8,44 @@
   <style>
     body {
       background-image: url('images/stg3bg1.png');
-	  background-repeat: repeat;
+	      background-repeat: repeat;;
+        padding-top: 50px;
+        padding-bottom: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin: 0;
+    }
+    @keyframes imageAppear {
+        0% {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        100% {
+            opacity: 1;
+            width: 1;
+            height: 1;
+        }
+    }
+
+
+    #title {
+        text-align: center;
+        font-weight: lighter;
+        font-size: 3em;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    #title>div {
+        display: inline-block;
+    }
+
+    #logo {
+        display: block;
+        border-radius: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        animation: imageAppear 1s 1;
     }
 
     .container {
@@ -66,16 +103,20 @@
 	<img id="logo" src="images/logo.jpg" width="200" height="200" />
     <h1 id="title">
         <div>欢迎来到</div>
-        <div>ZSF Team!</div>
+        <div>茶了个师的个人页面!</div>
     </h1>
+  <audio controls>
+      <source src="th16.5_01.mp3" type="audio/ogg">
+    您的浏览器不支持 audio 元素。
+  </audio>
   <div class="container">
     <header>
-      <h1>My Nightmare Blog</h1>
+      <h1>导航</h1>
     </header>
 
     <nav>
       <ul>
-        <li><a href="#">Home</a></li>
+        <li><a href="#">B站账号</a></li>
         <li><a href="#">About</a></li>
         <li><a href="#">Blog</a></li>
         <li><a href="#">Contact</a></li>
